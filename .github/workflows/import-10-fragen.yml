@@ -1,0 +1,29 @@
+name: Import 10 Fragen image
+on:
+  push:
+    paths:
+      - '.github/workflows/import-10-fragen.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch original 10 Fragen image
+        run: |
+          curl -fL --retry 3 'https://www.innsbruck-immobilie.at/wp-content/uploads/2026/01/10-Fragen.pdf-724x1024.jpg' -o 10-fragen-original.jpg
+          file 10-fragen-original.jpg
+          test $(wc -c < 10-fragen-original.jpg) -gt 20000
+      - name: Commit image
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 10-fragen-original.jpg
+          if ! git diff --cached --quiet; then
+            git commit -m "Store 10 Fragen image locally"
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi

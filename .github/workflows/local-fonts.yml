@@ -21,5 +21,7 @@ jobs:
           git add fonts/
           if ! git diff --cached --quiet; then
             git commit -m "Add locally hosted font binaries"
-            git push
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
           fi
